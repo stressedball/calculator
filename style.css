@@ -1,0 +1,41 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+#calculatorContainer {
+    margin-top: 150px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 40vw;
+}
+
+#display {
+    margin-left: 0;
+    grid-column: 1 / 4;
+    grid-row: 1;
+    text-align: right;
+    border: solid;
+    font-size: larger;
+    font-weight: 900;
+}
+
+div {
+    margin-left: 25vw;
+}
+
+button {
+    height: 40px;
+    border-radius: 5px;
+    font-size: large;
+    min-width: 30px;
+}
+
+#functions {
+    margin-top: 50px;
+}
+
+body div:nth-of-type(3) {
+    margin-top: 30px;
+}
