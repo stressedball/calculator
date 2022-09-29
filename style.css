@@ -6,23 +6,26 @@
 
 #calculatorContainer {
     margin-top: 150px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     max-width: 40vw;
 }
 
 #display {
     margin-left: 0;
-    grid-column: 1 / 4;
-    grid-row: 1;
     text-align: right;
     border: solid;
     font-size: larger;
     font-weight: 900;
+    height: 40px;
 }
 
 div {
     margin-left: 25vw;
+}
+
+#calculatorButtons {
+    margin-left: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 button {
@@ -32,7 +35,7 @@ button {
     min-width: 30px;
 }
 
-#functions {
+#operations {
     margin-top: 50px;
 }
 
