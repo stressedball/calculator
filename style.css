@@ -10,15 +10,23 @@
     margin-left: 25vw;
 }
 
-#display {
+#displayInput {
     margin-left: 0;
     text-align: right;
     border: solid;
-    font-size: larger;
+    font-size: 15px;
     font-weight: 900;
     height: 40px;
 }
 
+#displayResult{
+    margin-left: 0;
+    text-align: right;
+    border: solid;
+    font-size: large;
+    font-weight: 900;
+    height: 30px;
+}
 
 
 #numberButtons {

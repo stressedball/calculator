@@ -8,43 +8,61 @@ let operatorReference = null;
 let operatorId = '';
 let inputArray = [];
 let arrayOfNumbers = [];
-let storedResult = null;
+let arrayLength = 0;
 
-const displayScreen = document.getElementById('display');
-displayScreen.textContent = 'enter';
+let storedResult = null;
+const displayResult = document.getElementById('displayResult');
+const displayInput = document.getElementById('displayInput');
+displayInput.textContent = 'enter';
+
+container.addEventListener('click', showInput);
+function showInput(button) {
+    displayInput.textContent += button.target.textContent;
+}
 
 numberButtons.addEventListener('click', storeNumber);
 function storeNumber(input) {
     inputArray += input.target.textContent;
-    displayScreen.textContent = inputArray;
 }
 let count = 0;
-
+let specialCount = [];
 //OPERATORS BUTTONS LISTENER
 operationButtons.addEventListener('click', operate);
 function operate(button) {
     operatorReference = button.target;
     operatorId = operatorReference.id;
 
-    if (count > 1) {
-        arrayOfNumbers.push(inputArray);
-        console.log('count 3 array = ', arrayOfNumbers);
+    if (count >= 3) {
+        arrayOfNumbers.push(Number(inputArray));
         inputArray = [];
         storedResult = mathematics(arrayOfNumbers);
-        arrayOfNumbers = [];
-        arrayOfNumbers.push(storedResult);
+        specialCount.push(storedResult);
+        displayResult.textContent = storedResult;
         arrayOfNumbers.push(operatorId);
-        console.log('storedResult count 3= ', storedResult)
+        count++;
+    }
+    //HERE
+    if (count === 2) {
+        arrayOfNumbers.push(Number(inputArray));
+        console.log(arrayOfNumbers)
+        inputArray = [];
+        storedResult = mathematics(arrayOfNumbers);
+        displayResult.textContent = storedResult;
+        specialCount.push(storedResult);
+        arrayOfNumbers.push(operatorId);
+        count++;
     }
 
-    if (count < 2 && count > 0) {
+    if (arrayOfNumbers.length === 1 && count === 1) {
+        arrayOfNumbers.push(operatorId);
+    }
+
+    if (count === 1) {
         arrayOfNumbers.push(Number(inputArray));
-        console.log('count 2 array = ', arrayOfNumbers);
         inputArray = [];
         storedResult = mathematics(arrayOfNumbers);
-        console.log('storedResult count 2 = ', storedResult)
-        arrayOfNumbers = [];
-        arrayOfNumbers.push(storedResult);
+        displayResult.textContent = storedResult;
+        specialCount.push(storedResult);
         arrayOfNumbers.push(operatorId);
         count++;
     }
@@ -52,37 +70,95 @@ function operate(button) {
     if (storedResult === null && count === 0) {
         arrayOfNumbers.push(Number(inputArray));
         arrayOfNumbers.push(operatorId);
-        console.log('count 1 array = ', arrayOfNumbers);
-
-        console.log('storedResult count 1 = ', storedResult)
         inputArray = [];
         count++;
-    }
+    } 
+    
+
 }
 
 function mathematics() {
-    let x = arrayOfNumbers[0];
-    let y = arrayOfNumbers[2];
+    arrayLength = arrayOfNumbers.length;
 
-    if (arrayOfNumbers[1] === 'addition') {
+    if (count > 2) {
+        console.log(specialCount)
+        x = specialCount[0];
+        y = arrayOfNumbers[arrayLength - 1];
+        if (arrayOfNumbers[arrayLength - 2] === 'addition') {
+            const z = Number(x) + Number(y);
+            return z;
+        }
+        
+        if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
+            const z = Number(x) - Number(y);
+            return z;   
+        }
+        
+        if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
+            const z = Number(x) * Number(y);
+            return z;    
+        }
+        
+        if (arrayOfNumbers[arrayLength - 2] === 'division') {
+            const z = Number(x) / Number(y);
+            return z;    
+        }
+    }
+
+    if (count === 2) {
+        if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
+            x = arrayOfNumbers[arrayLength - 3];
+            y = arrayOfNumbers[arrayLength - 1];
+            const z = Number(x) * Number(y);
+            if (arrayOfNumbers[1] === 'addition') {
+                let s = arrayOfNumbers[0];
+                const w = s + z;
+                return w;
+            }
+        } else if (arrayOfNumbers[arrayLength - 2] === 'division') {
+            x = arrayOfNumbers[arrayLength - 3];
+            y = arrayOfNumbers[arrayLength - 1];
+            const z = Number(x) * Number(y);
+            if (arrayOfNumbers[1] === 'substraction') {
+                let s = arrayOfNumbers[0];
+                const w = s + z;
+                return w;
+            }
+        } else {
+            if (arrayOfNumbers[arrayLength - 2] === 'addition') {
+                x = specialCount[0];
+                y = arrayOfNumbers[arrayLength - 1];
+                return z = x + y;
+            } else if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
+                x = specialCount[0];
+                y = arrayOfNumbers[arrayLength - 1];
+                return z = x - y;
+            }
+        }
+    }
+    
+    x = arrayOfNumbers[arrayLength - 3];
+    y = arrayOfNumbers[arrayLength - 1];
+    if (arrayOfNumbers[arrayLength - 2] === 'addition') {
         const z = Number(x) + Number(y);
         return z;
     }
     
-    if (arrayOfNumbers[1] === 'substraction') {
+    if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
         const z = Number(x) - Number(y);
         return z;   
     }
     
-    if (arrayOfNumbers[1] === 'multiplication') {
+    if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
         const z = Number(x) * Number(y);
         return z;    
     }
     
-    if (arrayOfNumbers[1] === 'division') {
+    if (arrayOfNumbers[arrayLength - 2] === 'division') {
         const z = Number(x) / Number(y);
         return z;    
     }
+
 }
 
 
@@ -91,19 +167,24 @@ function mathematics() {
 const resultQuery = document.getElementById('equals');
 resultQuery.addEventListener('click', result);
 function result() {
+
     arrayOfNumbers.push(inputArray);
     storedResult = mathematics(arrayOfNumbers);
-    displayScreen.textContent = storedResult;
+    displayResult.textContent = storedResult;
+    arrayOfNumbers = [];
+    arrayOfNumbers.push(storedResult);
+    displayInput.textContent = '';
     inputArray = [];
+    count = 1;
 }
 
 
 //CLEAR BUTTON
 const clearButton = document.getElementById('clear');
 clearButton.addEventListener('click', clearFunction);
-function clearFunction(target) {
+function clearFunction() {
     inputArray = [];
     arrayOfNumbers = [];
-    displayScreen.textContent = 'cleared';
+    displayResult.textContent = 'cleared, enter input';
 }
 
