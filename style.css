@@ -7,6 +7,7 @@
 #calculatorContainer {
     margin-top: 150px;
     max-width: 40vw;
+    margin-left: 25vw;
 }
 
 #display {
@@ -18,12 +19,9 @@
     height: 40px;
 }
 
-div {
-    margin-left: 25vw;
-}
+
 
 #numberButtons {
-    margin-left: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
 }
