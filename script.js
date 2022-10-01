@@ -2,90 +2,108 @@ const calculatorContainer = document.getElementById('calculatorContainer');
 const container = document.getElementById('container');
 const numberButtons = document.querySelector('#numberButtons');
 const operationButtons = document.getElementById('operationButtons');
-//DISPLAY-BUTTONS FUNCTIONALITY
+
+//DISPLAY-BUTTONS FUNCTIONALITY & STORING NUMBERS
+let operatorReference = null;
+let operatorId = '';
+let inputArray = [];
+let arrayOfNumbers = [];
+let storedResult = null;
+
 const displayScreen = document.getElementById('display');
 displayScreen.textContent = 'enter';
 
-let operatorReference = null;
-let operatorText = '';
-let clear = '';
-let chainNumbers = [];
-let chainOperations = [];
+numberButtons.addEventListener('click', storeNumber);
+function storeNumber(input) {
+    inputArray += input.target.textContent;
+    displayScreen.textContent = inputArray;
+}
+let count = 0;
+
 //OPERATORS BUTTONS LISTENER
 operationButtons.addEventListener('click', operate);
 function operate(button) {
     operatorReference = button.target;
-    operatorText = operatorReference.id;
-    clear = 'clear';
-    chainOperations.push(Number(chainNumbers));
-    chainOperations.push(operatorText);
-    chainNumbers = [];
+    operatorId = operatorReference.id;
+
+    if (count > 1) {
+        arrayOfNumbers.push(inputArray);
+        console.log('count 3 array = ', arrayOfNumbers);
+        inputArray = [];
+        storedResult = mathematics(arrayOfNumbers);
+        arrayOfNumbers = [];
+        arrayOfNumbers.push(storedResult);
+        arrayOfNumbers.push(operatorId);
+        console.log('storedResult count 3= ', storedResult)
+    }
+
+    if (count < 2 && count > 0) {
+        arrayOfNumbers.push(Number(inputArray));
+        console.log('count 2 array = ', arrayOfNumbers);
+        inputArray = [];
+        storedResult = mathematics(arrayOfNumbers);
+        console.log('storedResult count 2 = ', storedResult)
+        arrayOfNumbers = [];
+        arrayOfNumbers.push(storedResult);
+        arrayOfNumbers.push(operatorId);
+        count++;
+    }
+
+    if (storedResult === null && count === 0) {
+        arrayOfNumbers.push(Number(inputArray));
+        arrayOfNumbers.push(operatorId);
+        console.log('count 1 array = ', arrayOfNumbers);
+
+        console.log('storedResult count 1 = ', storedResult)
+        inputArray = [];
+        count++;
+    }
+}
+
+function mathematics() {
+    let x = arrayOfNumbers[0];
+    let y = arrayOfNumbers[2];
+
+    if (arrayOfNumbers[1] === 'addition') {
+        const z = Number(x) + Number(y);
+        return z;
+    }
+    
+    if (arrayOfNumbers[1] === 'substraction') {
+        const z = Number(x) - Number(y);
+        return z;   
+    }
+    
+    if (arrayOfNumbers[1] === 'multiplication') {
+        const z = Number(x) * Number(y);
+        return z;    
+    }
+    
+    if (arrayOfNumbers[1] === 'division') {
+        const z = Number(x) / Number(y);
+        return z;    
+    }
 }
 
 
-//STORING NUMBERS
-numberButtons.addEventListener('click', storeNumber);
-function storeNumber(inputNumber) {
-    chainNumbers += inputNumber.target.textContent;
-    displayScreen.textContent = `${chainNumbers}`;
-}
 
 //RESULT EVENT LISTENER
 const resultQuery = document.getElementById('equals');
 resultQuery.addEventListener('click', result);
 function result() {
-    chainOperations.push(Number(chainNumbers));
-    displayScreen.textContent = operate2();
-
+    arrayOfNumbers.push(inputArray);
+    storedResult = mathematics(arrayOfNumbers);
+    displayScreen.textContent = storedResult;
+    inputArray = [];
 }
-
-//OPERATION COMPUTE
-function operate2 () {
-    let firstNumber = chainOperations[0];
-    let firstOperator = chainOperations[1];
-    let secNumber = chainOperations[2];
-    let operatorId = operatorReference.id;
-    switch(firstOperator) {
-        case 'addition':
-            return addition(firstNumber, secNumber);
-        case 'substraction':
-            return substraction(firstNumber, secNumber);
-        case 'multiplication':
-            return multiplication(firstNumber, secNumber);
-        case 'division':
-            return division(firstNumber, secNumber);
-    }
-}
-
 
 
 //CLEAR BUTTON
 const clearButton = document.getElementById('clear');
 clearButton.addEventListener('click', clearFunction);
 function clearFunction(target) {
-    if (target) {
-        chainNumbers = [];
-        chainOperations = [];
-        displayScreen.textContent = 'cleared';
-    }
+    inputArray = [];
+    arrayOfNumbers = [];
+    displayScreen.textContent = 'cleared';
 }
 
-function addition(x, y) {
-    const z = Number(x) + Number(y);
-    return z;
-}
-
-function substraction(x, y) {
-    const z = Number(x) - Number(y);
-    return z;   
-}
-
-function multiplication(x, y) {
-    const z = Number(x) * Number(y);
-    return z;    
-}
-
-function division(x, y){
-    const z = Number(x) / Number(y);
-    return z;    
-}
