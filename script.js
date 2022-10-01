@@ -6,20 +6,18 @@ const operationButtons = document.getElementById('operationButtons');
 const displayScreen = document.getElementById('display');
 displayScreen.textContent = 'enter';
 
-let getNumber = 0;
 let operatorReference = null;
 let operatorText = '';
 let clear = '';
 let chainNumbers = [];
 let chainOperations = [];
-let chainOperators = [];
 //OPERATORS BUTTONS LISTENER
 operationButtons.addEventListener('click', operate);
 function operate(button) {
     operatorReference = button.target;
     operatorText = operatorReference.id;
     clear = 'clear';
-    chainOperations.push(Number(getNumber));
+    chainOperations.push(Number(chainNumbers));
     chainOperations.push(operatorText);
     chainNumbers = [];
 }
@@ -29,19 +27,14 @@ function operate(button) {
 numberButtons.addEventListener('click', storeNumber);
 function storeNumber(inputNumber) {
     chainNumbers += inputNumber.target.textContent;
-    getNumber = chainNumbers;
-    display(getNumber);
-}
-
-function display() {
-    displayScreen.textContent = `${getNumber}`;
+    displayScreen.textContent = `${chainNumbers}`;
 }
 
 //RESULT EVENT LISTENER
 const resultQuery = document.getElementById('equals');
 resultQuery.addEventListener('click', result);
 function result() {
-    chainOperations.push(Number(getNumber));
+    chainOperations.push(Number(chainNumbers));
     displayScreen.textContent = operate2();
 
 }
@@ -56,11 +49,11 @@ function operate2 () {
         case 'addition':
             return addition(firstNumber, secNumber);
         case 'substraction':
-            return substraction(getNumber, getNumberTwo);
+            return substraction(firstNumber, secNumber);
         case 'multiplication':
-            return multiplication(getNumber, getNumberTwo);
+            return multiplication(firstNumber, secNumber);
         case 'division':
-            return division(getNumber, getNumberTwo);
+            return division(firstNumber, secNumber);
     }
 }
 
@@ -71,8 +64,8 @@ const clearButton = document.getElementById('clear');
 clearButton.addEventListener('click', clearFunction);
 function clearFunction(target) {
     if (target) {
-        clear = 'clear';
-        calculatorContainer.addEventListener('click', display);
+        chainNumbers = [];
+        chainOperations = [];
         displayScreen.textContent = 'cleared';
     }
 }
@@ -82,23 +75,17 @@ function addition(x, y) {
     return z;
 }
 
-function substraction() {
-    const x = getNumber;
-    const y = getNumberTwo;
+function substraction(x, y) {
     const z = Number(x) - Number(y);
     return z;   
 }
 
-function multiplication() {
-    const x = getNumber;
-    const y = getNumberTwo;
+function multiplication(x, y) {
     const z = Number(x) * Number(y);
     return z;    
 }
 
-function division(){
-    const x = getNumber;
-    const y = getNumberTwo;
+function division(x, y){
     const z = Number(x) / Number(y);
     return z;    
 }
