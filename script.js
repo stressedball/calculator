@@ -4,13 +4,7 @@ const numberButtons = document.querySelector('#numberButtons');
 const operationButtons = document.getElementById('operationButtons');
 
 //DISPLAY-BUTTONS FUNCTIONALITY & STORING NUMBERS
-let operatorReference = null;
-let operatorId = '';
 let inputArray = [];
-let arrayOfNumbers = [];
-let arrayLength = 0;
-
-let storedResult = null;
 const displayResult = document.getElementById('displayResult');
 const displayInput = document.getElementById('displayInput');
 displayInput.textContent = 'enter';
@@ -24,159 +18,204 @@ numberButtons.addEventListener('click', storeNumber);
 function storeNumber(input) {
     inputArray += input.target.textContent;
 }
+
+function displayOperations(something) {
+    displayResult.textContent = something;
+}
+
 let count = 0;
-let specialCount = [];
+let switchCase = false;
+let previousInput = 0;
+let previousOperator = null;
+let tempOperator = null;
+let tempInput = null;
+let result = 0;
 //OPERATORS BUTTONS LISTENER
 operationButtons.addEventListener('click', operate);
 function operate(button) {
-    operatorReference = button.target;
-    operatorId = operatorReference.id;
+    newOperator = button.target.id;
+    let newInput = Number(inputArray);
 
-    if (count >= 3) {
-        arrayOfNumbers.push(Number(inputArray));
-        inputArray = [];
-        storedResult = mathematics(arrayOfNumbers);
-        specialCount.push(storedResult);
-        displayResult.textContent = storedResult;
-        arrayOfNumbers.push(operatorId);
-        count++;
-    }
-    //HERE
-    if (count === 2) {
-        arrayOfNumbers.push(Number(inputArray));
-        console.log(arrayOfNumbers)
-        inputArray = [];
-        storedResult = mathematics(arrayOfNumbers);
-        displayResult.textContent = storedResult;
-        specialCount.push(storedResult);
-        arrayOfNumbers.push(operatorId);
-        count++;
+    if (switchCase === true) {
+        if (newOperator === 'multiplication' || newOperator === 'division') {
+            switch(tempOperator) {
+                case 'multiplication':
+                    result = multiply(tempInput, newInput);
+                    tempInput = result;
+                    switch(previousOperator) {
+                        case 'addition':
+                            result = sum(previousInput, tempInput);
+                            tempInput = result;
+                            displayOperations(result);
+                            return;
+                        case 'substraction':
+                            result = substract(previousInput, tempInput);
+                            tempInput = result;
+                            displayOperations(result);
+                            return;
+                    }
+                case 'division':
+                    result = divide(tempInput, newInput);
+                    tempInput = result;
+                    switch(previousOperator) {
+                        case 'addition':
+                            result = sum(previousInput, tempInput);
+                            tempInput = result;
+                            displayOperations(result);
+                            return;
+                        case 'substraction':
+                            result = substract(previousInput, tempInput);
+                            tempInput = result;
+                            displayOperations(result);
+                            return;
+                    }
+            }
+        } else if (newOperator === 'addition' || newOperator === 'substraction') {
+            switch(tempOperator) {
+                case 'multiplication':
+                    result = multiply(tempInput, newInput);
+                    tempInput = result;
+                    switch(previousOperator) {
+                        case 'addition':
+                            result = sum(previousInput, tempInput);
+                            displayOperations(result);
+                            flush();
+                            switchCase = false;
+                            return;
+                        case 'substraction':
+                            result = substract(previousInput, tempInput);
+                            displayOperations(result);
+                            flush();
+                            switchCase = false;
+                            return;
+                    }
+                case 'division':
+                    result = divide(tempInput, newInput);
+                    tempInput = result;
+                    switch(previousOperator) {
+                        case 'addition':
+                            result = sum(previousInput, tempInput);
+                            displayOperations(result);
+                            flush();
+                            switchCase = false;
+                            return;
+                        case 'substraction':
+                            result = substract(previousInput, tempInput);
+                            displayOperations(result);
+                            flush();
+                            switchCase = false;
+                            return;
+                    }
+            }
+        }
     }
 
-    if (arrayOfNumbers.length === 1 && count === 1) {
-        arrayOfNumbers.push(operatorId);
+    if (count > 0 && switchCase === false) {
+        if (newOperator === 'addition' || newOperator === 'substraction') {
+            switch(previousOperator) {
+                case 'addition':
+                    result = sum(previousInput, newInput);
+                    displayOperations(result);
+                    flush();
+                    break;
+                case 'substraction':
+                    result = substract(previousInput, newInput);
+                    displayOperations(result);
+                    flush()
+                    break
+                case 'multiplication':
+                    result = multiply(previousInput, newInput);
+                    displayOperations(result);
+                    flush();                
+                    break
+                case 'division':
+                    result = divide(previousInput, newInput);
+                    displayOperations(result);
+                    flush();
+                    break;
+            }
+        } else if (newOperator === 'multiplication' || newOperator === 'division') {
+            switch(previousOperator) {
+                case 'addition':
+                    switchCase = true;
+                    result = sum(previousInput, newInput);
+                    displayOperations(result);
+                    tempOperator = newOperator;
+                    tempInput = newInput;
+                    inputArray = [];
+                    break;
+                case 'substraction':
+                    switchCase = true;
+                    result = substract(previousInput, newInput);
+                    displayOperations(result);
+                    tempOperator = newOperator;
+                    tempInput = newInput;
+                    inputArray = [];
+                    break
+                case 'multiplication':
+                    result = multiply(previousInput, newInput);
+                    displayOperations(result);
+                    flush();                
+                    break
+                case 'division':
+                    result = divide(previousInput, newInput);
+                    displayOperations(result);
+                    flush();
+                    break;
+            }
+        }
     }
 
-    if (count === 1) {
-        arrayOfNumbers.push(Number(inputArray));
-        inputArray = [];
-        storedResult = mathematics(arrayOfNumbers);
-        displayResult.textContent = storedResult;
-        specialCount.push(storedResult);
-        arrayOfNumbers.push(operatorId);
-        count++;
-    }
-
-    if (storedResult === null && count === 0) {
-        arrayOfNumbers.push(Number(inputArray));
-        arrayOfNumbers.push(operatorId);
+    if (count === 0) {
+        previousInput = newInput;
+        previousOperator = newOperator;
         inputArray = [];
         count++;
     } 
-    
 
-}
-
-function mathematics() {
-    arrayLength = arrayOfNumbers.length;
-
-    if (count > 2) {
-        console.log(specialCount)
-        x = specialCount[0];
-        y = arrayOfNumbers[arrayLength - 1];
-        if (arrayOfNumbers[arrayLength - 2] === 'addition') {
-            const z = Number(x) + Number(y);
-            return z;
-        }
-        
-        if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
-            const z = Number(x) - Number(y);
-            return z;   
-        }
-        
-        if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
-            const z = Number(x) * Number(y);
-            return z;    
-        }
-        
-        if (arrayOfNumbers[arrayLength - 2] === 'division') {
-            const z = Number(x) / Number(y);
-            return z;    
-        }
-    }
-
-    if (count === 2) {
-        if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
-            x = arrayOfNumbers[arrayLength - 3];
-            y = arrayOfNumbers[arrayLength - 1];
-            const z = Number(x) * Number(y);
-            if (arrayOfNumbers[1] === 'addition') {
-                let s = arrayOfNumbers[0];
-                const w = s + z;
-                return w;
-            }
-        } else if (arrayOfNumbers[arrayLength - 2] === 'division') {
-            x = arrayOfNumbers[arrayLength - 3];
-            y = arrayOfNumbers[arrayLength - 1];
-            const z = Number(x) * Number(y);
-            if (arrayOfNumbers[1] === 'substraction') {
-                let s = arrayOfNumbers[0];
-                const w = s + z;
-                return w;
-            }
-        } else {
-            if (arrayOfNumbers[arrayLength - 2] === 'addition') {
-                x = specialCount[0];
-                y = arrayOfNumbers[arrayLength - 1];
-                return z = x + y;
-            } else if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
-                x = specialCount[0];
-                y = arrayOfNumbers[arrayLength - 1];
-                return z = x - y;
-            }
-        }
-    }
-    
-    x = arrayOfNumbers[arrayLength - 3];
-    y = arrayOfNumbers[arrayLength - 1];
-    if (arrayOfNumbers[arrayLength - 2] === 'addition') {
-        const z = Number(x) + Number(y);
+    function sum(x, y) {
+        console.log(x, y)
+        let z = x + y;
         return z;
     }
-    
-    if (arrayOfNumbers[arrayLength - 2] === 'substraction') {
-        const z = Number(x) - Number(y);
-        return z;   
-    }
-    
-    if (arrayOfNumbers[arrayLength - 2] === 'multiplication') {
-        const z = Number(x) * Number(y);
-        return z;    
-    }
-    
-    if (arrayOfNumbers[arrayLength - 2] === 'division') {
-        const z = Number(x) / Number(y);
-        return z;    
+
+    function substract(x, y) {
+        let z = x - y;
+        return z;
     }
 
+    function multiply(x, y) {
+        let z = x * y;
+        return z;
+    }
+
+    function divide(x, y) {
+        let z = x / y;
+        return z;
+    }
+
+    function flush() {
+        previousInput = result;
+        previousOperator = newOperator;
+        inputArray = [];
+    }
 }
+
+
 
 
 
 //RESULT EVENT LISTENER
-const resultQuery = document.getElementById('equals');
-resultQuery.addEventListener('click', result);
-function result() {
+// const resultQuery = document.getElementById('equals');
+// resultQuery.addEventListener('click', result);
+// function result() {
 
-    arrayOfNumbers.push(inputArray);
-    storedResult = mathematics(arrayOfNumbers);
-    displayResult.textContent = storedResult;
-    arrayOfNumbers = [];
-    arrayOfNumbers.push(storedResult);
-    displayInput.textContent = '';
-    inputArray = [];
-    count = 1;
-}
+//     storedResult = mathematics(arrayOfNumbers);
+//     displayResult.textContent = storedResult;
+//     displayInput.textContent = '';
+//     inputArray = [];
+//     count = 1;
+// }
 
 
 //CLEAR BUTTON
@@ -184,7 +223,6 @@ const clearButton = document.getElementById('clear');
 clearButton.addEventListener('click', clearFunction);
 function clearFunction() {
     inputArray = [];
-    arrayOfNumbers = [];
     displayResult.textContent = 'cleared, enter input';
 }
 
