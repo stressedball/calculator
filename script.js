@@ -2,179 +2,206 @@ const calculatorContainer = document.getElementById('calculatorContainer');
 const container = document.getElementById('container');
 const numberButtons = document.querySelector('#numberButtons');
 const operationButtons = document.getElementById('operationButtons');
-
-//DISPLAY-BUTTONS FUNCTIONALITY & STORING NUMBERS
-let inputArray = [];
 const displayResult = document.getElementById('displayResult');
 const displayInput = document.getElementById('displayInput');
-displayInput.textContent = 'enter';
+const clearButton = document.getElementById('clear');
 
-container.addEventListener('click', showInput);
-function showInput(button) {
-    displayInput.textContent += button.target.textContent;
-}
+//DISPLAY-BUTTONS FUNCTIONALITY & STORING NUMBERS
+let count = 0;
+let displayCount = 0;
+let inputArray = [];
+let numbersArray = [];
 
 numberButtons.addEventListener('click', storeNumber);
 function storeNumber(input) {
-    inputArray += input.target.textContent;
+    numbersArray += input.target.textContent;
+    displayAll(Number(numbersArray));
 }
 
-function displayOperations(something) {
-    displayResult.textContent = something;
+displayInput.textContent = 'enter input';
+let localText = '';
+function displayAll(...args) {
+    args = arguments;
+    let localNumber = 0;
+    let displayArrays = [];
+
+    if (args.length === 2) {
+        localText = args[0] + args[1];
+        displayInput.localText = localText;
+    }
+    if (typeof args[0] === 'number') {
+        displayInput.textContent = localText + `${args[0]}`;
+    } else {
+       displayInput.textContent += args[0];
+       localText = displayInput.textContent;
+    }
 }
 
-let count = 0;
+let newInput = null;
 let switchCase = false;
-let previousInput = 0;
-let previousOperator = null;
+let oldOperator = null;
 let tempOperator = null;
 let tempInput = null;
 let result = 0;
+let oldInput = 0;
+let newOperator = 0;
+let factorialResult = 0;
 //OPERATORS BUTTONS LISTENER
 operationButtons.addEventListener('click', operate);
 function operate(button) {
-    newOperator = button.target.id;
-    let newInput = Number(inputArray);
 
-    if (switchCase === true) {
-        if (newOperator === 'multiplication' || newOperator === 'division') {
-            switch(tempOperator) {
-                case 'multiplication':
-                    result = multiply(tempInput, newInput);
-                    tempInput = result;
-                    switch(previousOperator) {
-                        case 'addition':
-                            result = sum(previousInput, tempInput);
-                            tempInput = result;
-                            displayOperations(result);
-                            return;
-                        case 'substraction':
-                            result = substract(previousInput, tempInput);
-                            tempInput = result;
-                            displayOperations(result);
-                            return;
-                    }
-                case 'division':
-                    result = divide(tempInput, newInput);
-                    tempInput = result;
-                    switch(previousOperator) {
-                        case 'addition':
-                            result = sum(previousInput, tempInput);
-                            tempInput = result;
-                            displayOperations(result);
-                            return;
-                        case 'substraction':
-                            result = substract(previousInput, tempInput);
-                            tempInput = result;
-                            displayOperations(result);
-                            return;
-                    }
-            }
-        } else if (newOperator === 'addition' || newOperator === 'substraction') {
-            switch(tempOperator) {
-                case 'multiplication':
-                    result = multiply(tempInput, newInput);
-                    tempInput = result;
-                    switch(previousOperator) {
-                        case 'addition':
-                            result = sum(previousInput, tempInput);
-                            displayOperations(result);
-                            flush();
-                            switchCase = false;
-                            return;
-                        case 'substraction':
-                            result = substract(previousInput, tempInput);
-                            displayOperations(result);
-                            flush();
-                            switchCase = false;
-                            return;
-                    }
-                case 'division':
-                    result = divide(tempInput, newInput);
-                    tempInput = result;
-                    switch(previousOperator) {
-                        case 'addition':
-                            result = sum(previousInput, tempInput);
-                            displayOperations(result);
-                            flush();
-                            switchCase = false;
-                            return;
-                        case 'substraction':
-                            result = substract(previousInput, tempInput);
-                            displayOperations(result);
-                            flush();
-                            switchCase = false;
-                            return;
-                    }
-            }
-        }
+    newOperator = button.target.textContent;
+    newInput = Number(numbersArray);
+    if (newInput.length !== 0) {
+        displayAll(button.target.textContent);
+        numbersArray = [];
     }
-
-    if (count > 0 && switchCase === false) {
-        if (newOperator === 'addition' || newOperator === 'substraction') {
-            switch(previousOperator) {
-                case 'addition':
-                    result = sum(previousInput, newInput);
-                    displayOperations(result);
-                    flush();
-                    break;
-                case 'substraction':
-                    result = substract(previousInput, newInput);
-                    displayOperations(result);
-                    flush()
-                    break
-                case 'multiplication':
-                    result = multiply(previousInput, newInput);
-                    displayOperations(result);
-                    flush();                
-                    break
-                case 'division':
-                    result = divide(previousInput, newInput);
-                    displayOperations(result);
-                    flush();
-                    break;
-            }
-        } else if (newOperator === 'multiplication' || newOperator === 'division') {
-            switch(previousOperator) {
-                case 'addition':
-                    switchCase = true;
-                    result = sum(previousInput, newInput);
-                    displayOperations(result);
-                    tempOperator = newOperator;
-                    tempInput = newInput;
-                    inputArray = [];
-                    break;
-                case 'substraction':
-                    switchCase = true;
-                    result = substract(previousInput, newInput);
-                    displayOperations(result);
-                    tempOperator = newOperator;
-                    tempInput = newInput;
-                    inputArray = [];
-                    break
-                case 'multiplication':
-                    result = multiply(previousInput, newInput);
-                    displayOperations(result);
-                    flush();                
-                    break
-                case 'division':
-                    result = divide(previousInput, newInput);
-                    displayOperations(result);
-                    flush();
-                    break;
-            }
-        }
+    
+    
+    if (newInput.length === 0) {
+        displayAll(0, newOperator);
+        oldOperator = newOperator;
+        return;
     }
-
+    
     if (count === 0) {
-        previousInput = newInput;
-        previousOperator = newOperator;
-        inputArray = [];
+        oldOperator = newOperator;
+        oldInput = newInput;
         count++;
-    } 
+        return;
+    }
 
+    if (newOperator === '+' || newOperator === '-') {
+        if (oldOperator === '+') {
+            result = sum(oldInput, newInput);
+            displayResult.textContent = result;
+            oldInput = result;
+            oldOperator = newOperator;
+        } else if (oldOperator === '-') {
+            result = substract(oldInput, newInput);
+            displayResult.textContent = result;
+            oldInput = result;
+            oldOperator = newOperator;
+        }
+    }
+    
+
+    
+    if (switchCase === true) {
+        if (newOperator === '+' || newOperator === '-') {
+            if (tempOperator === '+') {
+                if (oldOperator === '*') {
+                    factorialResult = multiply(oldInput, newInput);
+                    result = sum(tempInput, factorialResult);
+                    displayResult.textContent = result;
+                    oldInput = result;
+                    oldOperator = newOperator
+                    switchCase = false;
+                    return;    
+                } else if (oldOperator === '/') {
+                    factorialResult = divide(oldInput, newInput);
+                    result = sum(tempInput, factorialResult);
+                    displayResult.textContent = result;
+                    oldInput = result;
+                    oldOperator = newOperator
+                    switchCase = false;
+                    return;    
+                }
+            } else if (tempOperator === '-') {
+                if (oldOperator === '*') {
+                    factorialResult = multiply(oldInput, newInput);
+                    result = substract(tempInput, factorialResult);
+                    displayResult.textContent = result;
+                    oldInput = result;
+                    oldOperator = newOperator
+                    switchCase = false;
+                    return;    
+                } else if (oldOperator === '/') {
+                    factorialResult = divide(oldInput, newInput);
+                    result = substract(tempInput, factorialResult);
+                    displayResult.textContent = result;
+                    oldInput = result;
+                    oldOperator = newOperator
+                    switchCase = false;
+                    return;
+                }
+            }
+        } else if (newOperator === '*') {
+            factorialResult = multiply(oldInput, newInput);
+            if (tempOperator === '+') {
+                displayResult.textContent = sum(tempInput, factorialResult);
+                oldInput = factorialResult;
+                return;
+            } else if (tempOperator === '-') {
+                displayResult.textContent = sum(tempInput, factorialResult);
+                oldInput = factorialResult;
+                return;
+            }
+        } else if (newOperator === '/') {
+            factorialResult = divide(oldInput, newInput);
+            if (tempOperator === '+') {
+                displayResult.textContent = sum(tempInput, factorialResult);
+                oldInput = factorialResult;
+                return;
+            } else if (tempOperator === '-') {
+                displayResult.textContent = sum(tempInput, factorialResult);
+                oldInput = factorialResult;
+                return;
+            } 
+        }
+    }
+    
+    if (newOperator === '+' || newOperator === '-') {
+        if (oldOperator === '*') {
+            result = multiply(oldInput, newInput);
+            displayResult.textContent = result;
+            oldInput = result;
+            oldOperator = newOperator;
+            return;
+        } else if (oldOperator === '/') {
+            result = divide(oldInput, newInput);
+            displayResult.textContent = result;
+            oldInput = result;
+            oldOperator = newOperator;
+            return;     
+        }
+    }
+    
+    if (newOperator === '*' || newOperator === '/') {
+        switch (oldOperator) {
+            case '*':
+                result = multiply(oldInput, newInput);
+                displayResult.textContent = result;
+                oldInput = result;
+                break;
+            case '/':
+                result = divide(oldInput, newInput);
+                displayResult.textContent = result;
+                oldInput = result;
+                oldOperator = newOperator;
+                break;
+            case '+':
+                displayResult.textContent = sum(oldInput, newInput);
+                tempInput = oldInput;
+                tempOperator = oldOperator;
+                oldInput = newInput;
+                oldOperator = newOperator;
+                switchCase = true;
+                break;
+            case '-':
+                displayResult.textContent = substract(oldInput, newInput);
+                tempInput = oldInput;
+                tempOperator = oldOperator;
+                oldInput = newInput;
+                oldOperator = newOperator;
+                switchCase = true;
+                break;
+        }
+    } 
+   
+    
+    
     function sum(x, y) {
-        console.log(x, y)
         let z = x + y;
         return z;
     }
@@ -192,12 +219,6 @@ function operate(button) {
     function divide(x, y) {
         let z = x / y;
         return z;
-    }
-
-    function flush() {
-        previousInput = result;
-        previousOperator = newOperator;
-        inputArray = [];
     }
 }
 
@@ -219,10 +240,10 @@ function operate(button) {
 
 
 //CLEAR BUTTON
-const clearButton = document.getElementById('clear');
 clearButton.addEventListener('click', clearFunction);
 function clearFunction() {
     inputArray = [];
     displayResult.textContent = 'cleared, enter input';
 }
+
 
