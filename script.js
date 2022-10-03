@@ -71,6 +71,48 @@ function operate(button) {
         return;
     }
 
+  
+    
+    if (switchCase === true) {
+        if (newOperator === '+' || newOperator === '-') {
+            if (oldOperator === '*') {
+                newInput = multiply(oldInput, newInput);
+                oldInput = tempInput;
+                oldOperator = tempOperator;
+                switchCase === false;
+            } else if (oldOperator === '/') {
+                newInput = divide(oldInput, newInput);
+                oldInput = tempInput;
+                oldOperator = tempOperator;
+                switchCase === false;
+            }
+        } else if (newOperator === '*') {
+            if (oldOperator === '*') {
+                oldInput = multiply(oldInput, newInput);
+                if (tempOperator === '+') {
+                    displayResult.textContent = sum(tempInput, oldInput);
+                    oldOperator = newOperator;
+                    return;
+                } else if (tempOperator === '-') {
+                    displayResult.textContent = substract(tempInput, oldInput);
+                    oldOperator = newOperator;
+                    return;
+                }
+            } else if (oldOperator === '/') {
+                oldInput = divide(oldInput, newInput);
+                if (tempOperator === '+') {
+                    displayResult.textContent = sum(tempInput, oldInput);
+                    oldOperator = newOperator;
+                    return;
+                } else if (tempOperator === '-') {
+                    displayResult.textContent = substract(tempInput, oldInput);
+                    oldOperator = newOperator;
+                    return;
+                }
+            }
+        }
+    }
+
     if (newOperator === '+' || newOperator === '-') {
         if (oldOperator === '+') {
             result = sum(oldInput, newInput);
@@ -82,72 +124,6 @@ function operate(button) {
             displayResult.textContent = result;
             oldInput = result;
             oldOperator = newOperator;
-        }
-    }
-    
-
-    
-    if (switchCase === true) {
-        if (newOperator === '+' || newOperator === '-') {
-            if (tempOperator === '+') {
-                if (oldOperator === '*') {
-                    factorialResult = multiply(oldInput, newInput);
-                    result = sum(tempInput, factorialResult);
-                    displayResult.textContent = result;
-                    oldInput = result;
-                    oldOperator = newOperator
-                    switchCase = false;
-                    return;    
-                } else if (oldOperator === '/') {
-                    factorialResult = divide(oldInput, newInput);
-                    result = sum(tempInput, factorialResult);
-                    displayResult.textContent = result;
-                    oldInput = result;
-                    oldOperator = newOperator
-                    switchCase = false;
-                    return;    
-                }
-            } else if (tempOperator === '-') {
-                if (oldOperator === '*') {
-                    factorialResult = multiply(oldInput, newInput);
-                    result = substract(tempInput, factorialResult);
-                    displayResult.textContent = result;
-                    oldInput = result;
-                    oldOperator = newOperator
-                    switchCase = false;
-                    return;    
-                } else if (oldOperator === '/') {
-                    factorialResult = divide(oldInput, newInput);
-                    result = substract(tempInput, factorialResult);
-                    displayResult.textContent = result;
-                    oldInput = result;
-                    oldOperator = newOperator
-                    switchCase = false;
-                    return;
-                }
-            }
-        } else if (newOperator === '*') {
-            factorialResult = multiply(oldInput, newInput);
-            if (tempOperator === '+') {
-                displayResult.textContent = sum(tempInput, factorialResult);
-                oldInput = factorialResult;
-                return;
-            } else if (tempOperator === '-') {
-                displayResult.textContent = sum(tempInput, factorialResult);
-                oldInput = factorialResult;
-                return;
-            }
-        } else if (newOperator === '/') {
-            factorialResult = divide(oldInput, newInput);
-            if (tempOperator === '+') {
-                displayResult.textContent = sum(tempInput, factorialResult);
-                oldInput = factorialResult;
-                return;
-            } else if (tempOperator === '-') {
-                displayResult.textContent = sum(tempInput, factorialResult);
-                oldInput = factorialResult;
-                return;
-            } 
         }
     }
     
@@ -173,6 +149,7 @@ function operate(button) {
                 result = multiply(oldInput, newInput);
                 displayResult.textContent = result;
                 oldInput = result;
+                oldOperator = newOperator;
                 break;
             case '/':
                 result = divide(oldInput, newInput);
@@ -221,10 +198,6 @@ function operate(button) {
         return z;
     }
 }
-
-
-
-
 
 //RESULT EVENT LISTENER
 // const resultQuery = document.getElementById('equals');
