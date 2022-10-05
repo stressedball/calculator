@@ -3,26 +3,8 @@
     padding: 0;
 }
 
-body {
-    background-color: #51adcf;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-}
-
-h1 {
-    text-align: center;
-    color: white;
-    font-family: Arial;
-}
-
-#displayInput {
-    color: white;
-    text-align: center;
-    height: 20vh;
-    font-size: 30px;
-    font-family: 'Silkscreen';
+html {
+    height: 100%;
 }
 
 .addCursor::after {
@@ -31,31 +13,94 @@ h1 {
     animation: cursor-blink 1200ms steps(2) infinite;
 }
  
-@keyframes cursor-blink {
-  0% {
-    opacity: 0;
-  }
+
+body {
+    background-color: #51adcf;
+    background-image: linear-gradient(#51adcf, white);
+    background-image: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
-.cleared {
-    color: red;
+button {
+    font-size: 20px;
+    background-color: inherit;
+    min-width: 5vw;
+    min-height: 8vh;
+    color: black;
+    font-weight: 800;
+    border-bottom: 2px;
+    border-style: solid;
+    border-image: radial-gradient(navy, cyan) 0 0 100% 0;
+    transition: font 250ms;
+}
+
+.hovered {
+    font-size: 35px;
+    border-bottom: 6px;
+    border-style: solid;
+    border-image: radial-gradient(navy, cyan) 0 0 100% 0;
+    transition: font 300ms;
+}
+
+#numberButtons button:nth-of-type(1) {
+
+}
+
+body div:nth-of-type(5) {
+    margin-top: 30px;
+}
+
+#clear {
+    width: auto;
+}
+
+
+#displayInput {
+    color: white;
+    text-align: center;
+    height: 8vh;
+    font-size: 30px;
+    font-family: 'Silkscreen';
+    border: 1px solid;
+    min-width: 80vw;
+    padding: 8vh 0;
 }
 
 #displayResult {
     font-family: 'Tangerine', serif;
     color: white;
-    min-height: 40px;
+    min-height: 4vh;
     text-align: center;
     font-size: 30px;
     font-family: 'Silkscreen';
+    padding: 3vh ;
+}
 
+footer {
+    position: absolute;
+    bottom: 0;
+    font-size: 20px;
+}
+
+@keyframes cursor-blink {
+    0% {
+      opacity: 0;
+    }
+}
+
+h1 {
+    text-align: center;
+    color: white;
+    font-family: Arial;
 }
 
 #numberButtons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     width: 50vw;    
-    
 }
 
 #numberButtons button {
@@ -68,25 +113,8 @@ h1 {
     height: auto;
 }
 
-#clear {
-    width: auto;
-}
 
-button {
-    font-size: 20px;
-    background-color: #51adcf;
-    min-width: 5vw;
-    min-height: 8vh;
-    color: white;
-}
 
-body div:nth-of-type(5) {
-    margin-top: 30px;
-}
 
-footer {
-    position: absolute;
-    bottom: 0;
-    font-size: 20px;
-}
+
 

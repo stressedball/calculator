@@ -4,6 +4,8 @@ const displayResult = document.getElementById('displayResult');
 const displayInput = document.getElementById('displayInput');
 const clearButton = document.getElementById('clear');
 const equates = document.getElementById('equals');
+const backspace = document.getElementById('backspace');
+
 let numbersArray = [];
 let count = 0;
 let newInput = null;
@@ -16,8 +18,7 @@ let oldInput = 0;
 let newOperator = null;
 let factorialResult = 0;
 let initializeDisplay = false;
-
-let elementsArray = [numberButtons, operationButtons];
+let motherOfArrays = [];
 
 numberButtons.addEventListener('click', updateInput);
 numberButtons.addEventListener('click', storeNumber);
@@ -26,6 +27,7 @@ equates.addEventListener('click', resultDisplay);
 operationButtons.addEventListener('click', operate);
 operationButtons.addEventListener('click', updateInput);
 clearButton.addEventListener('click', updateInput);
+backspace.addEventListener('click', eraseLast);
 
 displayInput.textContent = 'do calculs';
 
@@ -61,8 +63,6 @@ function updateInput(input) {
         cursorCount = true;
     }
     
-    let inputId = input.target.id;
-    
     if (input.target.id === 'equals') {
         return;
     }
@@ -76,20 +76,32 @@ function updateInput(input) {
     
     if (input.target.id === 'clear') {
         displayInput.classList.toggle('addCursor');
-
         cursorCount = false;
-        displayInput.textContent = input.target.textContent;
+        displayInput.textContent = 'Cleared';
+        displayResult.textContent = 0;
         initializeDisplay = false;
         clearFunction();
     }
 }
 
-function storeNumber(input) {
-    numbersArray += input.target.textContent;
-}
+// let decimalNumber;
+// let isDecimal = false;
+// function storeNumber(input) {
+//     numbersArray += input.target.textContent;
+//     if (input.target.id = ',') {
+//         decimalNumber = numbersArray + '.';
+
+//     }
+
+//     if (input.target.id === 'backspace') {
+//         return;
+//     }
+
+//     motherOfArrays.push(Number(input.target.textContent));
+// }
 
 function operate(button) {
-
+    motherOfArrays.push(button.textContent);
     newOperator = button.target.textContent;
     newInput = Number(numbersArray);
     
@@ -216,6 +228,9 @@ function operate(button) {
 
 }
 
+function eraseLast(target) {
+
+}
 
 function clearFunction() {
     numbersArray = [];
