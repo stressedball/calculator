@@ -3,48 +3,90 @@
     padding: 0;
 }
 
+body {
+    background-color: #51adcf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 
-#calculatorContainer {
-    margin-top: 150px;
-    max-width: 40vw;
-    margin-left: 25vw;
+h1 {
+    text-align: center;
+    color: white;
+    font-family: Arial;
 }
 
 #displayInput {
-    margin-left: 0;
-    text-align: right;
-    border: solid;
-    font-size: 15px;
-    font-weight: 900;
-    height: 40px;
+    color: white;
+    text-align: center;
+    height: 20vh;
+    font-size: 30px;
+    font-family: 'Silkscreen';
 }
 
-#displayResult{
-    margin-left: 0;
-    text-align: right;
-    border: solid;
-    font-size: large;
-    font-weight: 900;
-    height: 30px;
+.addCursor::after {
+    content: '|';
+    color: white;
+    animation: cursor-blink 1200ms steps(2) infinite;
+}
+ 
+@keyframes cursor-blink {
+  0% {
+    opacity: 0;
+  }
 }
 
+.cleared {
+    color: red;
+}
+
+#displayResult {
+    font-family: 'Tangerine', serif;
+    color: white;
+    min-height: 40px;
+    text-align: center;
+    font-size: 30px;
+    font-family: 'Silkscreen';
+
+}
 
 #numberButtons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    width: 50vw;    
+    
 }
 
-button {
-    height: 40px;
-    border-radius: 5px;
-    font-size: large;
-    min-width: 30px;
+#numberButtons button {
+    width: auto;
+    font-size: 20px;
 }
 
 #operationButtons {
-    margin-top: 50px;
+    margin-top: 5vh;
+    height: auto;
 }
 
-body div:nth-of-type(3) {
+#clear {
+    width: auto;
+}
+
+button {
+    font-size: 20px;
+    background-color: #51adcf;
+    min-width: 5vw;
+    min-height: 8vh;
+    color: white;
+}
+
+body div:nth-of-type(5) {
     margin-top: 30px;
 }
+
+footer {
+    position: absolute;
+    bottom: 0;
+    font-size: 20px;
+}
+

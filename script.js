@@ -1,42 +1,11 @@
-const calculatorContainer = document.getElementById('calculatorContainer');
-const container = document.getElementById('container');
 const numberButtons = document.querySelector('#numberButtons');
 const operationButtons = document.getElementById('operationButtons');
 const displayResult = document.getElementById('displayResult');
 const displayInput = document.getElementById('displayInput');
 const clearButton = document.getElementById('clear');
-
-//DISPLAY-BUTTONS FUNCTIONALITY & STORING NUMBERS
-let count = 0;
-let displayCount = 0;
-let inputArray = [];
+const equates = document.getElementById('equals');
 let numbersArray = [];
-
-numberButtons.addEventListener('click', storeNumber);
-function storeNumber(input) {
-    numbersArray += input.target.textContent;
-    displayAll(Number(numbersArray));
-}
-
-displayInput.textContent = 'enter input';
-let localText = '';
-function displayAll(...args) {
-    args = arguments;
-    let localNumber = 0;
-    let displayArrays = [];
-
-    if (args.length === 2) {
-        localText = args[0] + args[1];
-        displayInput.localText = localText;
-    }
-    if (typeof args[0] === 'number') {
-        displayInput.textContent = localText + `${args[0]}`;
-    } else {
-       displayInput.textContent += args[0];
-       localText = displayInput.textContent;
-    }
-}
-
+let count = 0;
 let newInput = null;
 let switchCase = false;
 let oldOperator = null;
@@ -44,22 +13,92 @@ let tempOperator = null;
 let tempInput = null;
 let result = 0;
 let oldInput = 0;
-let newOperator = 0;
+let newOperator = null;
 let factorialResult = 0;
-//OPERATORS BUTTONS LISTENER
+let initializeDisplay = false;
+
+let elementsArray = [numberButtons, operationButtons];
+
+numberButtons.addEventListener('click', updateInput);
+numberButtons.addEventListener('click', storeNumber);
+equates.addEventListener('click', resultDisplay);
+equates.addEventListener('click', resultDisplay);
 operationButtons.addEventListener('click', operate);
+operationButtons.addEventListener('click', updateInput);
+clearButton.addEventListener('click', updateInput);
+
+displayInput.textContent = 'do calculs';
+
+function resultDisplay() {
+    if (count === 1) {
+        newInput = Number(numbersArray);
+    }
+    switch(oldOperator) {
+        case '+':
+            result = sum(oldInput, newInput);
+            displayResult.textContent = result;
+            break;
+        case '-':
+            result = substract(oldInput, newInput);
+            displayResult.textContent = result;
+            break;
+        case '*':
+            result = multiply(oldInput, newInput);
+            displayResult.textContent = result;
+            break;
+        case '/':
+            result = divide(oldInput, newInput);
+            displayResult.textContent = result;
+            break;
+        }
+}
+
+function updateInput(input) {
+    let cursorCount = false;
+    
+    if (cursorCount === false) {
+        displayInput.classList.add('addCursor');
+        cursorCount = true;
+    }
+    
+    let inputId = input.target.id;
+    
+    if (input.target.id === 'equals') {
+        return;
+    }
+    
+    if (initializeDisplay === false) {
+        displayInput.textContent = input.target.textContent;
+        initializeDisplay = true;
+    } else {
+    displayInput.textContent += input.target.textContent;
+    }
+    
+    if (input.target.id === 'clear') {
+        displayInput.classList.toggle('addCursor');
+
+        cursorCount = false;
+        displayInput.textContent = input.target.textContent;
+        initializeDisplay = false;
+        clearFunction();
+    }
+}
+
+function storeNumber(input) {
+    numbersArray += input.target.textContent;
+}
+
 function operate(button) {
 
     newOperator = button.target.textContent;
     newInput = Number(numbersArray);
+    
     if (newInput.length !== 0) {
-        displayAll(button.target.textContent);
         numbersArray = [];
     }
     
     
     if (newInput.length === 0) {
-        displayAll(0, newOperator);
         oldOperator = newOperator;
         return;
     }
@@ -70,8 +109,6 @@ function operate(button) {
         count++;
         return;
     }
-
-  
     
     if (switchCase === true) {
         if (newOperator === '+' || newOperator === '-') {
@@ -116,6 +153,7 @@ function operate(button) {
     if (newOperator === '+' || newOperator === '-') {
         if (oldOperator === '+') {
             result = sum(oldInput, newInput);
+            console.log(result)
             displayResult.textContent = result;
             oldInput = result;
             oldOperator = newOperator;
@@ -175,48 +213,40 @@ function operate(button) {
                 break;
         }
     } 
-   
-    
-    
-    function sum(x, y) {
-        let z = x + y;
-        return z;
-    }
 
-    function substract(x, y) {
-        let z = x - y;
-        return z;
-    }
-
-    function multiply(x, y) {
-        let z = x * y;
-        return z;
-    }
-
-    function divide(x, y) {
-        let z = x / y;
-        return z;
-    }
 }
 
-//RESULT EVENT LISTENER
-// const resultQuery = document.getElementById('equals');
-// resultQuery.addEventListener('click', result);
-// function result() {
 
-//     storedResult = mathematics(arrayOfNumbers);
-//     displayResult.textContent = storedResult;
-//     displayInput.textContent = '';
-//     inputArray = [];
-//     count = 1;
-// }
-
-
-//CLEAR BUTTON
-clearButton.addEventListener('click', clearFunction);
 function clearFunction() {
-    inputArray = [];
-    displayResult.textContent = 'cleared, enter input';
+    numbersArray = [];
+    switchCase = false;
+    oldOperator = null;
+    tempOperator = null;
+    tempInput = 0;
+    result = 0;
+    oldInput = 0;
+    newOperator = null;
+    factorialResult = 0;
+    count = 0;
 }
 
+function sum(x, y) {
+    let z = x + y;
+    return z;
+}
+
+function substract(x, y) {
+    let z = x - y;
+    return z;
+}
+
+function multiply(x, y) {
+    let z = x * y;
+    return z;
+}
+
+function divide(x, y) {
+    let z = x / y;
+    return z;
+}
 
