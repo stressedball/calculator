@@ -3,34 +3,35 @@ const displayInput = document.querySelector('#displayInput');
 const displayResult = document.querySelector('#displayResult');
 const regOps = /[-+*/]/g;
 const regNum = /[0-9.]/g;
+let backspace = false;
+let count = 0;
+let firstFactorial = '';
+let factorialOperator;
+let secondFactorial = '';
+let factorialCatch = false;
+let firstNumber = '';
+let lastOperator;
+let leftOver = '';
+let localResult = 0;
 let inputVariable = [];
 let inputVarLength = 0;
 let inputText;
 let inputId;
-let magicNumber = undefined;
-let magicOperator = '';
-let count = 0;
-let result = 0;
-let resultArray = [];
+let numbersArray = [];
+let operatorIndex = 0;
 let operatorArray = [];
 let operator = null;
-let firstNumber = '';
-let secondNumber = '';
-let operatorIndex = 0;
-let factorial = '';
-let backspace = false;
-let localResult = 0;
-let factorialOperator;
-let factorialNumber = '';
-
-let leftOver = '';
 let operatorSignal = false;
-let lastOperatorIndex;
+let result = 0;
+let resultArray = [];
+let secondNumber = '';
 
+//EVENT LISTENER FOR ALL BUTTONS
 for (let i = 0; i < allButtons.length; i++) {
     allButtons[i].addEventListener('click', displayInputFunction);
 }
 
+//DISPLAY INPUT
 function displayInputFunction(input) {
     inputId = input.target.id;
     inputText = input.target.textContent;
@@ -48,11 +49,13 @@ function displayInputFunction(input) {
     displayInput.classList.add('addCursor');
 
     if(inputText.match(/\./) && inputVarLength !== 0) {
+
         if (inputVariable[inputVarLength - 1].match(/\./)) {
             return;
         } else if (inputVariable[inputVarLength - 1].match(/[-+*/]/)) {
             inputVariable += '0';
-        } 
+        }
+         
     }
     
     if(inputText === '=') {
@@ -70,15 +73,21 @@ function displayInputFunction(input) {
         backspaceFunction(leftOver);
     }
     
-    //OPERATORS treatment
-    if (inputText.match(/[-+*/]/)) {
-        if (inputVariable[inputVarLength - 1].match(/[-+*/]/)) {
+    //OPERATORS replacement
+    if (inputText.match(regOps)) {
+        
+        if (inputVariable[inputVarLength - 1].match(regOps)) {
+                lastOperator = inputVariable[inputVarLength - 1];
                 inputVariable = inputVariable.slice(0, -1);
                 inputVariable += inputText;
-                //changeOperator();
+                operatorArray.pop();
+                operatorArray.push(inputText);
+                changeOperator(lastOperator);
         } else {
+            operatorArray.push(inputText);
             inputVariable += inputText;
         }
+
     }
 
     //numbers 
@@ -91,10 +100,6 @@ function displayInputFunction(input) {
 }
 
 function backspaceFunction(input) {
-    
-    for (let i = inputVarLength - 1; i >= 0; i--) {
-        console.log(inputVariable[i].search(regOps))
-    }
 
     if (count === 1) {
         if (input.match(regOps)) {
@@ -106,6 +111,8 @@ function backspaceFunction(input) {
         }
         if (input.match(regNum)) {
             secondNumber = secondNumber.slice(0, secondNumber.length - 1);
+            //maybe store a copy of inputVariable?
+            //get the last operator of that copy?
         }
     }
 
@@ -125,26 +132,91 @@ function backspaceFunction(input) {
 
 }
 
-// function changeOperator() {
-//     if (count === 0) {
-//         operator = inputText;
-//     }
+function changeOperator(lastOp) {
 
-//     if (count === 1) {
-//         if (inputText.match(/[-+]/)) {
-//             operator = inputText;
-//         }
-//         if (inputText.match(/[/*]/)) {
-            
-//         }
-//     }
-//     operatorSignal = false;
-//     return;
-// }
+    if (count === 0) {
+        operator = inputText;
+    }
+
+    if (count === 1) {
+        numbersArray = inputVariable.split(regOps);
+
+        if (inputText.match(/[-+]/)) {
+
+            if (lastOp.match(/[*/]/)) {
+                count = 2;
+                factorialCatch = true;
+                factorialOperator = inputText;
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = operatorArray[operatorArray.length - 2];
+            }
+            if (lastOp.match(/[-+]/)) {        
+                operator = inputText; 
+                count = 1;         
+            }
+
+        } else if (inputText.match(/[/*]/)) {
+
+            if (lastOp.match(/[*/]/)) {
+                operator = inputText;
+                count = 1;
+            }
+            if (lastOp.match(/[-+]/)) {        
+                count = 2;
+                factorialCatch = true;
+                factorialOperator = inputText;
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = operatorArray[operatorArray.length - 2];
+            }
+
+        }
+
+    }
+
+    if (count === 2) {
+        numbersArray = inputVariable.split(regOps);
+
+        if (inputText.match(/[-+]/)) {
+            if (lastOp.match(/[*/]/)) {
+                count = 2;
+                factorialCatch = true;
+                factorialOperator = inputText;
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = operatorArray[operatorArray.length - 2];
+            } else if (lastOp.match(/[-+]/)) {        
+                count = 1;     
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = inputText; 
+                operatorSignal = true;
+            }
+
+        }   
+
+        if (inputText.match(/[/*]/)) {
+
+            if (lastOp.match(/[*/]/)) {
+                count = 1;
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = inputText;
+                operatorSignal = true;
+            } else if (lastOp.match(/[-+]/)) {        
+                count = 2;
+                factorialCatch = true;
+                factorialOperator = inputText;
+                firstNumber = resultArray[resultArray.length - 2];
+                operator = operatorArray[operatorArray.length - 2];
+            }
+
+        }
+
+    }
+
+    resultArray.pop();
+ }
 
 
 function makeCalculs() {
-    
+
     if (!inputVariable.match(regOps)) {
         displayResult.textContent = inputVariable;
         if (!inputVariable.match(regNum)) {
@@ -154,28 +226,39 @@ function makeCalculs() {
     }
     
     if (count === 2 && inputText.match(regOps)) {
+
         if (inputText.match(/[*/]/)) {
-            factorial = secondNumber;
-            factorialNumber = '';
+            if (factorialCatch ===  false) {
+                firstFactorial = secondNumber;
+            } else {
+                firstFactorial = numbersArray[numbersArray.length - 2];
+                factorialCatch = false;
+            }
+            secondFactorial = '';
             secondNumber = '';
             factorialOperator = inputText;
             return;
         }
         if (inputText.match(/[-+]/)) {
-            factorialNumber = '';  
+            secondFactorial = '';  
             count = 1;
         }
     }
     
     if (count === 1 && inputText.match(regOps)) {
+
         if (inputText.match(/[-+]/)) {
+            if (operatorSignal === false) {
+                firstNumber = localResult;
+            } else {
+                operatorSignal = false;
+            }
             secondNumber = '';
-            firstNumber = localResult;
             operator = inputText;
-            resultArray.push(firstNumber);
-            operatorArray.push(operator)
-            return;
+            resultArray.push(firstNumber);    
+            return;    
         } 
+
         if (inputText.match(/[*/]/)) {
             if (operator.match(/[*/]/)) {
                 secondNumber = '';
@@ -185,7 +268,7 @@ function makeCalculs() {
                 return;
             }
             if (operator.match(/[-+]/)) {        
-                factorial = secondNumber;
+                firstFactorial = secondNumber;
                 secondNumber = '';
                 factorialOperator = inputText;
                 count = 2;
@@ -200,7 +283,6 @@ function makeCalculs() {
         operatorIndex = inputVariable.indexOf(operator);
         firstNumber = inputVariable.slice(0, operatorIndex);
         resultArray.push(firstNumber);
-        operatorArray.push(operator);
         count = 1;
         return;
     }
@@ -208,8 +290,8 @@ function makeCalculs() {
     if (inputText.match(regNum) && count === 1) {
         secondNumber += inputText;
     } else if (inputText.match(regNum) && count === 2) {
-        factorialNumber += inputText;
-        secondNumber = operate(factorial, factorialOperator, factorialNumber);
+        secondFactorial += inputText;
+        secondNumber = operate(firstFactorial, factorialOperator, secondFactorial);
     } else if (inputText.match(regNum) && count === 0) {
         secondNumber += inputText;
     }
