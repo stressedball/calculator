@@ -7,8 +7,8 @@ let backspace = false;
 let count = 0;
 let firstFactorial = '';
 let factorialOperator;
-let secondFactorial = '';
 let factorialCatch = false;
+let factResArray = [];
 let firstNumber = '';
 let lastOperator;
 let leftOver = '';
@@ -25,6 +25,7 @@ let operatorSignal = false;
 let result = 0;
 let resultArray = [];
 let secondNumber = '';
+let secondFactorial = '';
 
 //EVENT LISTENER FOR ALL BUTTONS
 for (let i = 0; i < allButtons.length; i++) {
@@ -82,7 +83,7 @@ function displayInputFunction(input) {
                 inputVariable += inputText;
                 operatorArray.pop();
                 operatorArray.push(inputText);
-                changeOperator(lastOperator);
+                changeOperator();
         } else {
             operatorArray.push(inputText);
             inputVariable += inputText;
@@ -132,86 +133,18 @@ function backspaceFunction(input) {
 
 }
 
-function changeOperator(lastOp) {
+function changeOperator() {
 
-    if (count === 0) {
-        operator = inputText;
+    if (inputVariable.match(regOps).length <= 1) {
+        count = 0;
     }
 
     if (count === 1) {
-        numbersArray = inputVariable.split(regOps);
-
-        if (inputText.match(/[-+]/)) {
-
-            if (lastOp.match(/[*/]/)) {
-                count = 2;
-                factorialCatch = true;
-                factorialOperator = inputText;
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = operatorArray[operatorArray.length - 2];
-            }
-            if (lastOp.match(/[-+]/)) {        
-                operator = inputText; 
-                count = 1;         
-            }
-
-        } else if (inputText.match(/[/*]/)) {
-
-            if (lastOp.match(/[*/]/)) {
-                operator = inputText;
-                count = 1;
-            }
-            if (lastOp.match(/[-+]/)) {        
-                count = 2;
-                factorialCatch = true;
-                factorialOperator = inputText;
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = operatorArray[operatorArray.length - 2];
-            }
-
+        operatorSignal = true;
+        if (lastOperator.match(/[-+]/)) {
+            count = 2;
         }
-
     }
-
-    if (count === 2) {
-        numbersArray = inputVariable.split(regOps);
-
-        if (inputText.match(/[-+]/)) {
-            if (lastOp.match(/[*/]/)) {
-                count = 2;
-                factorialCatch = true;
-                factorialOperator = inputText;
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = operatorArray[operatorArray.length - 2];
-            } else if (lastOp.match(/[-+]/)) {        
-                count = 1;     
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = inputText; 
-                operatorSignal = true;
-            }
-
-        }   
-
-        if (inputText.match(/[/*]/)) {
-
-            if (lastOp.match(/[*/]/)) {
-                count = 1;
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = inputText;
-                operatorSignal = true;
-            } else if (lastOp.match(/[-+]/)) {        
-                count = 2;
-                factorialCatch = true;
-                factorialOperator = inputText;
-                firstNumber = resultArray[resultArray.length - 2];
-                operator = operatorArray[operatorArray.length - 2];
-            }
-
-        }
-
-    }
-
-    resultArray.pop();
  }
 
 
@@ -228,15 +161,37 @@ function makeCalculs() {
     if (count === 2 && inputText.match(regOps)) {
 
         if (inputText.match(/[*/]/)) {
-            if (factorialCatch ===  false) {
-                firstFactorial = secondNumber;
+            if (operatorSignal === true) {
+                numbersArray = inputVariable.split(regOps);
+
+                function findIndexLastResult(isPlusMinus) {
+                    if (isPlusMinus === '+' || isPlusMinus === '-') {
+                        return false;
+                    }
+                    return true;
+                }
+                
+                let findResultByOperatorIndex = operatorArray.findLastIndex(findIndexLastResult);
+
+                if (operatorArray[operatorArray.length - 2].match(/[*/]/)) {
+                    firstNumber = resultArray[findResultByOperatorIndex - 2];
+                    firstFactorial = secondNumber;
+                } else {
+                    firstNumber = resultArray[findResultByOperatorIndex - 1];
+                    firstFactorial = numbersArray[numbersArray.length - 2];
+                }
+
+                console.log(firstFactorial);
+                resultArray.pop();
+
             } else {
-                firstFactorial = numbersArray[numbersArray.length - 2];
-                factorialCatch = false;
+                firstFactorial = secondNumber;
             }
             secondFactorial = '';
             secondNumber = '';
             factorialOperator = inputText;
+            resultArray.push(localResult);
+            operatorSignal = false;
             return;
         }
         if (inputText.match(/[-+]/)) {
@@ -248,31 +203,47 @@ function makeCalculs() {
     if (count === 1 && inputText.match(regOps)) {
 
         if (inputText.match(/[-+]/)) {
-            if (operatorSignal === false) {
-                firstNumber = localResult;
+            if (operatorSignal === true) {
+                operator = operatorArray[operatorArray.length - 1];
             } else {
-                operatorSignal = false;
+                operator = inputText;
             }
+            firstNumber = localResult;
             secondNumber = '';
-            operator = inputText;
             resultArray.push(firstNumber);    
+            operatorSignal = false;
             return;    
         } 
 
         if (inputText.match(/[*/]/)) {
             if (operator.match(/[*/]/)) {
+                if (operatorSignal === true) {
+                    operator = operatorArray[operatorArray.length - 1];
+                } else {
+                    operator = inputText;
+                }
                 secondNumber = '';
                 firstNumber = localResult;
                 operator = inputText;
                 resultArray.push(firstNumber);
                 return;
             }
-            if (operator.match(/[-+]/)) {        
-                firstFactorial = secondNumber;
-                secondNumber = '';
-                factorialOperator = inputText;
+            if (operator.match(/[-+]/)) { 
+                numbersArray = inputVariable.split(regOps);
+                if (operatorSignal = true) {
+                    operator = operatorArray[operatorArray.length - 2];
+                    firstFactorial = numbersArray[numbersArray.length - 2];
+                    secondNumber = '';
+                    factorialOperator = inputText;
+                } else {
+                    firstFactorial = numbersArray[numbersArray.length - 1];
+                    console.log(firstFactorial)
+                    secondNumber = '';
+                    factorialOperator = inputText;
+                }    
+                firstNumber = resultArray[resultArray.length - 1];  
                 count = 2;
-                resultArray.push(firstNumber);
+                operatorSignal = false;
                 return;
             }
         }
